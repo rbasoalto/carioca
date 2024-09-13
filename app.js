@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (players.length >= 2) {
       document.getElementById("player-names-section").classList.add("hidden");
       saveGameState();
+      updateScoreboard(); // Show the scoreboard
       startRound();
     } else {
       alert("Please enter at least two player names.");
@@ -58,7 +59,9 @@ document.addEventListener("DOMContentLoaded", function() {
   // Load game state if available
   if (loadGameState()) {
     document.getElementById("player-names-section").classList.add("hidden");
+    updateScoreboard(); // Update the scoreboard
     if (currentRoundIndex >= rounds.length) {
+      // All rounds have been played
       showFinalResults();
     } else {
       startRound();
@@ -79,7 +82,7 @@ function startRound() {
   const submitScoresButton = document.getElementById("submit-scores-button");
 
   // Update round title
-  roundTitle.textContent = "Round: " + rounds[currentRoundIndex];
+  roundTitle.textContent = "Enter Scores for Round: " + rounds[currentRoundIndex];
 
   // Clear previous inputs
   scoreInputs.innerHTML = "";
@@ -127,62 +130,71 @@ function startRound() {
     // Hide score entry section
     scoreEntrySection.classList.add("hidden");
 
-    // Show scoreboard
+    // Update scoreboard
+    currentRoundIndex++;
     updateScoreboard();
+
+    // Proceed to next round if any
+    if (currentRoundIndex < rounds.length) {
+      startRound();
+    } else {
+      showFinalResults();
+    }
   };
 }
 
 // Function to update the scoreboard
 function updateScoreboard() {
-  const scoreboardSection = document.getElementById("scoreboard-section");
   const scoreboardTable = document.getElementById("scoreboard-table");
-  const nextRoundButton = document.getElementById("next-round-button");
 
   // Clear previous scoreboard
   scoreboardTable.innerHTML = "";
 
   // Create table header
   const headerRow = document.createElement("tr");
-  const nameHeader = document.createElement("th");
-  nameHeader.textContent = "Player";
-  headerRow.appendChild(nameHeader);
+  const roundHeader = document.createElement("th");
+  roundHeader.textContent = "Round";
+  headerRow.appendChild(roundHeader);
 
-  const totalHeader = document.createElement("th");
-  totalHeader.textContent = "Total";
-  headerRow.appendChild(totalHeader);
+  players.forEach(function(player) {
+    const playerHeader = document.createElement("th");
+    playerHeader.textContent = player;
+    headerRow.appendChild(playerHeader);
+  });
 
   scoreboardTable.appendChild(headerRow);
 
-  // Create table rows for each player
-  players.forEach(function(player) {
+  // Now, create rows for each round
+  for (let i = 0; i < rounds.length; i++) {
     const row = document.createElement("tr");
-    const nameCell = document.createElement("td");
-    nameCell.textContent = player;
-    row.appendChild(nameCell);
+    const roundCell = document.createElement("td");
+    roundCell.textContent = rounds[i];
+    row.appendChild(roundCell);
 
-    const totalScore = scores[player].reduce((a, b) => a + b, 0);
-    const totalCell = document.createElement("td");
-    totalCell.textContent = totalScore;
-    row.appendChild(totalCell);
+    // For each player
+    players.forEach(function(player) {
+      const cell = document.createElement("td");
+
+      if (scores[player].length > i) {
+        // The player has a score for this round
+        const score = scores[player][i];
+        // Calculate cumulative total up to this round
+        const cumulativeTotal = scores[player].slice(0, i + 1).reduce((a, b) => a + b, 0);
+        cell.textContent = score + " / " + cumulativeTotal;
+      } else {
+        // Round not yet played
+        cell.textContent = "-";
+      }
+
+      row.appendChild(cell);
+    });
 
     scoreboardTable.appendChild(row);
-  });
+  }
 
   // Show scoreboard section
+  const scoreboardSection = document.getElementById("scoreboard-section");
   scoreboardSection.classList.remove("hidden");
-
-  if (currentRoundIndex < rounds.length - 1) {
-    nextRoundButton.classList.remove("hidden");
-    nextRoundButton.onclick = function() {
-      currentRoundIndex++;
-      scoreboardSection.classList.add("hidden");
-      saveGameState();
-      startRound();
-    };
-  } else {
-    nextRoundButton.classList.add("hidden");
-    showFinalResults();
-  }
 }
 
 // Function to show final results
