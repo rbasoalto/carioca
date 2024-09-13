@@ -7,30 +7,34 @@
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
+      margin: 0;
     }
     .container {
       max-width: 800px;
       margin: auto;
+      padding: 0 10px;
     }
     .hidden {
       display: none;
     }
     input[type="text"], input[type="number"] {
       margin-bottom: 10px;
-      padding: 5px;
-      width: calc(100% - 12px);
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
     }
     button {
       padding: 10px 15px;
       margin-right: 10px;
       margin-top: 10px;
+      cursor: pointer;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
-      table-layout: fixed;
       word-wrap: break-word;
+      overflow-x: auto;
     }
     th, td {
       padding: 8px;
@@ -54,6 +58,41 @@
       margin-top: 10px;
       font-weight: bold;
       text-align: center;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      th, td {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px;
+      }
+      tr {
+        margin-bottom: 10px;
+      }
+      th::before, td::before {
+        content: attr(data-label);
+        flex-basis: 50%;
+        text-align: left;
+        font-weight: bold;
+      }
+      th, td {
+        text-align: right;
+      }
+      table {
+        border: none;
+      }
+      th, td {
+        border: none;
+        border-bottom: 1px solid #ccc;
+      }
     }
   </style>
 </head>

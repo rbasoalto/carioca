@@ -180,8 +180,10 @@ function updateScoreboard() {
   // Now, create rows for each round
   for (let i = 0; i < rounds.length; i++) {
     const row = document.createElement("tr");
+
     const roundCell = document.createElement("td");
     roundCell.textContent = rounds[i];
+    roundCell.setAttribute('data-label', 'Round');
     row.appendChild(roundCell);
 
     // For each player
@@ -199,6 +201,7 @@ function updateScoreboard() {
         cell.textContent = "-";
       }
 
+      cell.setAttribute('data-label', player);
       row.appendChild(cell);
     });
 
@@ -208,6 +211,7 @@ function updateScoreboard() {
 
     const dealerCell = document.createElement("td");
     dealerCell.textContent = dealerName;
+    dealerCell.setAttribute('data-label', 'Dealer');
     row.appendChild(dealerCell);
 
     scoreboardTable.appendChild(row);
