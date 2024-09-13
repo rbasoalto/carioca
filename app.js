@@ -80,9 +80,17 @@ function startRound() {
   const roundTitle = document.getElementById("round-title");
   const scoreInputs = document.getElementById("score-inputs");
   const submitScoresButton = document.getElementById("submit-scores-button");
+  const dealerInfo = document.getElementById("dealer-info");
 
   // Update round title
   roundTitle.textContent = "Enter Scores for Round: " + rounds[currentRoundIndex];
+
+  // Calculate the dealer for this round
+  const dealerIndex = currentRoundIndex % players.length;
+  const dealerName = players[dealerIndex];
+
+  // Display dealer information
+  dealerInfo.textContent = "Dealer for this round: " + dealerName;
 
   // Clear previous inputs
   scoreInputs.innerHTML = "";
@@ -162,6 +170,11 @@ function updateScoreboard() {
     headerRow.appendChild(playerHeader);
   });
 
+  // Add a column for Dealer
+  const dealerHeader = document.createElement("th");
+  dealerHeader.textContent = "Dealer";
+  headerRow.appendChild(dealerHeader);
+
   scoreboardTable.appendChild(headerRow);
 
   // Now, create rows for each round
@@ -188,6 +201,14 @@ function updateScoreboard() {
 
       row.appendChild(cell);
     });
+
+    // Determine the dealer for this round
+    const dealerIndex = i % players.length;
+    const dealerName = players[dealerIndex];
+
+    const dealerCell = document.createElement("td");
+    dealerCell.textContent = dealerName;
+    row.appendChild(dealerCell);
 
     scoreboardTable.appendChild(row);
   }
