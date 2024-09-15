@@ -2,6 +2,12 @@
 <html>
 <head>
   <title>Carioca Score Keeper</title>
+  <!-- Existing styles and meta tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Link the manifest -->
+  <link rel="manifest" href="manifest.json">
+  <!-- Add theme color meta tag -->
+  <meta name="theme-color" content="#ffffff">
   <style>
     /* Basic styling */
     body {
@@ -130,5 +136,19 @@
 
   <!-- Include the JavaScript file -->
   <script src="app.js"></script>
+  <!-- Register the Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').then(function(registration) {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          // Registration failed
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
