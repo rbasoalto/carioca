@@ -2,14 +2,13 @@
 <html>
 <head>
   <title>Carioca Score Keeper</title>
-  <!-- Existing styles and meta tags -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Link the manifest -->
   <link rel="manifest" href="manifest.json">
   <!-- Add theme color meta tag -->
   <meta name="theme-color" content="#ffffff">
   <style>
-    /* Basic styling */
+    /* Existing CSS styles */
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
@@ -60,7 +59,7 @@
     #score-inputs div {
       margin-bottom: 10px;
     }
-    #dealer-info {
+    #dealer-info, #dealer-info-after-table {
       margin-top: 10px;
       font-weight: bold;
       text-align: center;
@@ -118,6 +117,8 @@
     <div id="scoreboard-section" class="hidden">
       <h2>Scoreboard</h2>
       <table id="scoreboard-table"></table>
+      <!-- Dealer info after the table -->
+      <div id="dealer-info-after-table"></div>
       <button id="reset-game-button">Reset Game</button>
       <div id="final-results" class="hidden">
         <h2>Final Results</h2>
@@ -128,7 +129,6 @@
     <!-- Score Entry Section -->
     <div id="score-entry-section" class="hidden">
       <h2 id="round-title"></h2>
-      <div id="dealer-info"></div>
       <div id="score-inputs"></div>
       <button id="submit-scores-button">Submit Scores</button>
     </div>
@@ -136,6 +136,7 @@
 
   <!-- Include the JavaScript file -->
   <script src="app.js"></script>
+
   <!-- Register the Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
