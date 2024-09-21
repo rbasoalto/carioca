@@ -8,7 +8,7 @@
   <!-- Add theme color meta tag -->
   <meta name="theme-color" content="#ffffff">
   <style>
-    /* Existing CSS styles */
+    /* Basic styling */
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
@@ -59,7 +59,7 @@
     #score-inputs div {
       margin-bottom: 10px;
     }
-    #dealer-info, #dealer-info-after-table {
+    #dealer-info-after-table {
       margin-top: 10px;
       font-weight: bold;
       text-align: center;
@@ -140,14 +140,22 @@
   <!-- Register the Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js').then(function(registration) {
-          // Registration was successful
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }, function(err) {
-          // Registration failed
-          console.log('ServiceWorker registration failed: ', err);
+      navigator.serviceWorker.register('sw.js').then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+        // Listen for messages from the service worker
+        navigator.serviceWorker.addEventListener('message', function(event) {
+          if (event.data.type === 'UPDATE_AVAILABLE') {
+            console.log('New content is available for:', event.data.url);
+
+            // Optionally, prompt the user to reload the app
+            if (confirm('A new version of the app is available. Reload now?')) {
+              window.location.reload();
+            }
+          }
         });
+      }).catch(function(err) {
+        console.log('ServiceWorker registration failed: ', err);
       });
     }
   </script>
