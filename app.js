@@ -1,5 +1,5 @@
 // Define the rounds
-const rounds = ["2T", "1E1T", "2E", "1E2T", "2E1T", "3E", "4T", "ER"];
+const rounds = ["2T", "1E1T", "2E", "3T", "1E2T", "2E1T", "3E", "4T", "ER"];
 
 // Initialize variables
 let players = [];
@@ -266,6 +266,14 @@ function loadGameState() {
     players = gameState.players;
     scores = gameState.scores;
     currentRoundIndex = gameState.currentRoundIndex;
+
+    // Check if the rounds array length matches
+    if (scores[players[0]] && scores[players[0]].length > rounds.length) {
+      // The rounds array has changed; reset the game
+      localStorage.removeItem('cariocaGameState');
+      return false;
+    }
+
     return true;
   }
   return false;
