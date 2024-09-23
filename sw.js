@@ -1,38 +1,44 @@
-const CACHE_NAME = 'carioca-score-cache-v1';
+const CACHE_NAME = 'carioca-score-cache-v3';
 
-// Install event
 self.addEventListener('install', function(event) {
-  // Activate the service worker immediately
+  console.log('Service Worker installing.');
+  // Skip waiting to activate the new service worker immediately
   self.skipWaiting();
 });
 
-// Activate event
 self.addEventListener('activate', function(event) {
-  // Claim clients immediately, so the service worker starts controlling them
-  event.waitUntil(self.clients.claim());
+  console.log('Service Worker activating.');
+  // Claim clients immediately so the new service worker starts controlling them
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      ).then(() => {
+        return self.clients.claim();
+      });
+    })
+  );
 });
 
-// Fetch event
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.match(event.request).then(function(response) {
-        // Fetch the latest version in the background
-        const fetchPromise = fetch(event.request).then(function(networkResponse) {
-          // Update the cache with the new response
-          cache.put(event.request, networkResponse.clone());
-
-          // Notify clients about the update (optional)
-          sendMessageToClients({
-            type: 'UPDATE_AVAILABLE',
-            url: event.request.url
+        const fetchPromise = fetch(event.request)
+          .then(function(networkResponse) {
+            // Update the cache with the new response
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          })
+          .catch(function() {
+            // If network fetch fails, return the cached response
+            return response;
           });
-
-          return networkResponse;
-        }).catch(function() {
-          // If network fetch fails, return the cached response
-          return response;
-        });
 
         // Return the cached response immediately if available, or wait for network
         return response || fetchPromise;
@@ -41,11 +47,9 @@ self.addEventListener('fetch', function(event) {
   );
 });
 
-// Function to send a message to clients (optional)
-function sendMessageToClients(msg) {
-  self.clients.matchAll().then(function(clients) {
-    clients.forEach(function(client) {
-      client.postMessage(msg);
-    });
-  });
-}
+// Optional: Listen for messages from the client
+self.addEventListener('message', function(event) {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});

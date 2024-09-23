@@ -139,25 +139,31 @@
 
   <!-- Register the Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(function(registration) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    document.addEventListener('DOMContentLoaded', function() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
 
-        // Listen for messages from the service worker
-        navigator.serviceWorker.addEventListener('message', function(event) {
-          if (event.data.type === 'UPDATE_AVAILABLE') {
-            console.log('New content is available for:', event.data.url);
+          // Listen for updates to the Service Worker
+          registration.addEventListener('updatefound', function() {
+            const newWorker = registration.installing;
 
-            // Optionally, prompt the user to reload the app
-            if (confirm('A new version of the app is available. Reload now?')) {
-              window.location.reload();
-            }
-          }
+            newWorker.addEventListener('statechange', function() {
+              if (newWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // New update available
+                  if (confirm('A new version of the app is available. Reload now?')) {
+                    window.location.reload();
+                  }
+                }
+              }
+            });
+          });
+        }).catch(function(err) {
+          console.log('ServiceWorker registration failed: ', err);
         });
-      }).catch(function(err) {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-    }
+      }
+    });
   </script>
 </body>
 </html>
